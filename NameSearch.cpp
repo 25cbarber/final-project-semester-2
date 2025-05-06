@@ -152,20 +152,20 @@ void NameSearch::searchByName(string folderPath, string name) {
 void NameSearch::searchByName(string folderPath, string name, string mode, int year) {
     if (mode == "-e") {
         int startYear = year;
-        int endYear = 2022;
-        if (startYear < 1880 || startYear > endYear) {
-            cout << "Invalid year. Please provide a year between 1880 and " << endYear << "." << endl;
+        int endYear = year; 
+        if (startYear < 1880 || startYear > 2022) {
+            cout << "Invalid year. Please provide a year between 1880 and 2022." << endl;
             return;
         }
 
         vector<string> files = listFiles(folderPath);
-        map<int, int> yearOccurrences;
+        map<string, int> nameOccurrences;
 
         for (string fileName : files) {
             if (fileName.substr(0, 3) == "yob" && fileName.substr(fileName.size() - 4) == ".txt") {
                 string yearStr = fileName.substr(3, 4);
                 int fileYear = stoi(yearStr);
-                if (fileYear >= startYear) {
+                if (fileYear == startYear) {
                     ifstream file(folderPath + "/" + fileName);
                     string line;
 
@@ -176,21 +176,20 @@ void NameSearch::searchByName(string folderPath, string name, string mode, int y
                         string currentName = line.substr(0, comma1);
                         int occurrences = stoi(line.substr(comma2 + 1));
 
-                        if (currentName == name) {
-                            yearOccurrences[fileYear] += occurrences;
-                        }
+                        nameOccurrences[currentName] += occurrences;
                     }
                 }
             }
         }
 
-        cout << "\nCount by Year" << endl;
-        for (int y = startYear; y <= endYear; ++y) {
-            if (yearOccurrences.find(y) != yearOccurrences.end()) {
-                cout << y << " : " << yearOccurrences[y] << endl;
-            } else {
-                cout << y << " : 0" << endl;
-            }
+        vector<pair<string, int>> sortedNames(nameOccurrences.begin(), nameOccurrences.end());
+        sort(sortedNames.begin(), sortedNames.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
+            return b.second < a.second;
+        });
+
+        cout << "\nThe most popular names that year were:\n";
+        for (size_t i = 0; i < min(sortedNames.size(), size_t(5)); ++i) {
+            cout << i + 1 << ". " << sortedNames[i].first << " | " << sortedNames[i].second << endl;
         }
         cout << endl;
     } else {

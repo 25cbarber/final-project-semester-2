@@ -66,9 +66,18 @@ int main() {
                 }
                 break;
             }
-            case 2:
-                cout << "You selected: Search by Year" << endl;
+            case 2: {
+                cout << "Enter a valid year between 1880 and 2022: ";
+                int year;
+                cin >> year;
+
+                if (year < 1880 || year > 2022) {
+                    cout << "Invalid date entered. To search by year, please enter a valid year between 1880 and 2022." << endl;
+                } else {
+                    NameSearch::searchByName(folderPath, "", "-e", year);
+                }
                 break;
+            }
             case 3:
                 cout << "You selected: Search by State" << endl;
                 cout << "This functionality is not implemented yet." << endl;
